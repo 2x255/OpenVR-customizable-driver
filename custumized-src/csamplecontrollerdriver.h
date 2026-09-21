@@ -13,7 +13,7 @@ class CSampleControllerDriver : public vr::ITrackedDeviceServerDriver
 {
     int32_t ControllerIndex;
 
-#define CONTROLLER_KEYCODEFILE "C:\\Program Files (x86)\\Steam\\steamapps\\common\\SteamVR\\drivers\\openVR-driver-for-DIY(custumized)\\resources\\settings\\keyCode(controller).txt"
+#define CONTROLLER_KEYCODEFILE "C:\\Program Files (x86)\\Steam\\steamapps\\common\\SteamVR\\drivers\\OpenVR-customizable-driver\\resources\\settings\\keyCode(controller).txt"
 	KeyCodeManager keyCode;
 
 public:

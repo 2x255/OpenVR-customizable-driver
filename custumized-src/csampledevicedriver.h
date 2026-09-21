@@ -9,7 +9,7 @@
 //-----------------------------------------------------------------------------
 class CSampleDeviceDriver : public vr::ITrackedDeviceServerDriver, public vr::IVRDisplayComponent
 {
-#define DEVICE_KEYCODEFILE "C:\\Program Files (x86)\\Steam\\steamapps\\common\\SteamVR\\drivers\\openVR-driver-for-DIY(custumized)\\resources\\settings\\keyCode(device).txt"
+#define DEVICE_KEYCODEFILE "C:\\Program Files (x86)\\Steam\\steamapps\\common\\SteamVR\\drivers\\OpenVR-customizable-driver\\resources\\settings\\keyCode(device).txt"
 	KeyCodeManager keyCode;
 
 public:
