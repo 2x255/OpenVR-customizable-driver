@@ -1,0 +1,68 @@
+//コメント行。コントローラは[6][10]。コメント行に空白と半角イコールを入れてはならない
+//ab[equal]cdのとき、[a][b][equal]仮想キーコードcd,と処理されます。
+
+//cyaw:+F-H
+00 = F
+01 = H
+//cpitch:+R-Y
+02 = R
+03 = Y
+//croll:+T-G
+04 = T
+05 = G
+//clear:cyaw,cpitch,croll:V
+09 = V
+
+////////////////////////////////////////////////////////////
+
+//left-cpZ:-W+S
+20 = W
+21 = S
+//left-cpX:+A-D
+22 = A
+23 = D
+//left-cpY:+Q-E
+24 = Q
+25 = E
+//left-Clear:cpX,cpY,cpZ:1
+29 = 49
+//逆修飾キー(このキーを押していると20番台は反応しない):VK_SPACE
+28 = 32
+
+//left-buttonX:Z
+30 = Z
+//left-buttonY:X
+31 = X
+//left-buttoMenu:C
+32 = C
+//left-buttonTrigger:2
+33 = 50
+//left-buttonGrip:3
+34 = 51
+
+////////////////////////////////////////////////////////////
+
+//right-cpZ:-I+K
+40 = I
+41 = K
+//right-cpX:+J-L
+42 = J
+43 = L
+//right-cpY:+U-O
+44 = U
+45 = O
+//right-Clear:cpX,cpY,cpZ:0
+49 = 48
+//逆修飾キー(このキーを押していると40番台は反応しない):VK_SPACE
+48 = 32
+
+//right-buttonX:,(cumma)
+50 = ,
+//right-buttonY:M
+51 = M
+//right-buttoMenu:N
+52 = N
+//right-buttonTrigger:9
+53 = 57
+//right-buttonGrip:8
+54 = 56
