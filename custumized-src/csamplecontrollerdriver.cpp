@@ -109,8 +109,21 @@ vr::EVRInitError CSampleControllerDriver::Activate(vr::TrackedDeviceIndex_t unOb
     // create our haptic component
     vr::VRDriverInput()->CreateHapticComponent(m_ulPropertyContainer, "/output/haptic", &m_compHaptic);
 
+
 	//キーコードをtxtから読みこみ
-	keyCode.LoadByFile(CONTROLLER_KEYCODEFILE, 6, 10);
+	FilePath fp;
+	char str[TSTR_MAX+2], strSub[TSTR_MAX+2] = {};
+	fp.InitializeA(NULL);
+	strcpy(str, fp.RelativePathA("damy"));
+	while(strcmp(strSub, "SteamVR")){
+		fp.CutUniqueNameA(str);/*SteanVRディレクトリに上がるまで下のフォルダ名をカット*/
+		fp.GetUniqueNameA(str, strSub, TSTR_MAX);
+	}
+	strcpy(&str[strlen(str)], "\\drivers\\OpenVR-customizable-driver\\resources\\settings\\keyCode(controller).txt");
+	//MessageBoxA(NULL, str, NULL, MB_OK);
+	keyCode.LoadByFile(str, 6, 10);
+
+	//keyCode.LoadByFile(CONTROLLER_KEYCODEFILE, 6, 10);
 
     return VRInitError_None;
 }

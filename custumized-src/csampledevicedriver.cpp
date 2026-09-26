@@ -114,7 +114,17 @@ EVRInitError CSampleDeviceDriver::Activate(TrackedDeviceIndex_t unObjectId)
     }
 
 	//キーコードをtxtから読みこみ
-	keyCode.LoadByFile(DEVICE_KEYCODEFILE, 4, 10);
+	FilePath fp;
+	char str[TSTR_MAX+2], strSub[TSTR_MAX+2] = {};
+	fp.InitializeA(NULL);
+	strcpy(str, fp.RelativePathA("damy"));
+	while(strcmp(strSub, "SteamVR")){
+		fp.CutUniqueNameA(str);/*SteanVRディレクトリに上がるまで下のフォルダ名をカット*/
+		fp.GetUniqueNameA(str, strSub, TSTR_MAX);
+	}
+	strcpy(&str[strlen(str)], "\\drivers\\OpenVR-customizable-driver\\resources\\settings\\keyCode(device).txt");
+	//MessageBoxA(NULL, str, NULL, MB_OK);
+	keyCode.LoadByFile(str, 6, 10);
 
     return VRInitError_None;
 }
@@ -217,6 +227,9 @@ vr::DriverPose_t CSampleDeviceDriver::GetPose()
     pose.qDriverFromHeadRotation = HmdQuaternion_Init(1, 0, 0, 0);
 
     //Simple change yaw, pitch, roll with numpad keys
+	/*if(GetKeyState(VK_SPACE) || GetKeyState('V')){
+		MessageBoxA(NULL, "yes!!", NULL, MB_OK);
+	}*/
 	bool f08 = (GetAsyncKeyState(keyCode[0][8]) & 0x8000) != 0;
 	bool f18 = (GetAsyncKeyState(keyCode[1][8]) & 0x8000) != 0;
 	bool f28 = (GetAsyncKeyState(keyCode[2][8]) & 0x8000) != 0;

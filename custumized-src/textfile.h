@@ -1,7 +1,7 @@
 #pragma once
 
 #if defined(_WINDOWS)
-#include <Windows.h>
+#include "01main.h"
 
 class TextFile{
 	bool fLoaded = false;
