@@ -67,3 +67,14 @@ std::vector<unsigned int>& KeyCodeManager::operator[](unsigned int index)
 {
 	return keyCode[index];
 }
+
+bool KeyCodeManager::GetState(void)
+{
+	return fState;
+}
+
+void KeyCodeManager::SetState(bool fNewState)
+{
+	fState = fNewState;
+	return;
+}

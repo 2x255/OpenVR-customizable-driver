@@ -121,7 +121,7 @@ vr::EVRInitError CSampleControllerDriver::Activate(vr::TrackedDeviceIndex_t unOb
 	}
 	strcpy(&str[strlen(str)], "\\drivers\\OpenVR-customizable-driver\\resources\\settings\\keyCode(controller).txt");
 	//MessageBoxA(NULL, str, NULL, MB_OK);
-	keyCode.LoadByFile(str, 6, 10);
+	keyCode.LoadByFile(str, 7, 10);
 
 	//keyCode.LoadByFile(CONTROLLER_KEYCODEFILE, 6, 10);
 
@@ -166,94 +166,110 @@ DriverPose_t CSampleControllerDriver::GetPose()
     pose.qWorldFromDriverRotation = HmdQuaternion_Init(1, 0, 0, 0);
     pose.qDriverFromHeadRotation = HmdQuaternion_Init(1, 0, 0, 0);
 
-    if (ControllerIndex == 1) {
+	if (ControllerIndex == 1) {
+		if(keyCode.GetState()){
 
-        if ((GetAsyncKeyState(keyCode[0][0]) & 0x8000) != 0) {
-            cyaw += 0.1;                                       //F
-        }
-        if ((GetAsyncKeyState(keyCode[0][1]) & 0x8000) != 0) {
-            cyaw += -0.1;                                       //H
-        }
-        if ((GetAsyncKeyState(keyCode[0][2]) & 0x8000) != 0) {
-            cpitch += 0.1;                                       //R
-        }
-        if ((GetAsyncKeyState(keyCode[0][3]) & 0x8000) != 0) {
-            cpitch += -0.1;                                       //Y
-        }
-		if ((GetAsyncKeyState(keyCode[0][4]) & 0x8000) != 0) {
-            croll += 0.1;                                       //T
-        }
-        if ((GetAsyncKeyState(keyCode[0][5]) & 0x8000) != 0) {
-            croll += -0.1;                                       //G
-        }
-        if ((GetAsyncKeyState(keyCode[0][9]) & 0x8000) != 0) { //V
-            cyaw = 0;
-            cpitch = 0;
-            croll = 0;
-        }
+			if ((GetAsyncKeyState(keyCode[0][0]) & 0x8000) != 0) {
+				cyaw += 0.1;                                       //F
+			}
+			if ((GetAsyncKeyState(keyCode[0][1]) & 0x8000) != 0) {
+				cyaw += -0.1;                                       //H
+			}
+			if ((GetAsyncKeyState(keyCode[0][2]) & 0x8000) != 0) {
+				cpitch += 0.1;                                       //R
+			}
+			if ((GetAsyncKeyState(keyCode[0][3]) & 0x8000) != 0) {
+				cpitch += -0.1;                                       //Y
+			}
+			if ((GetAsyncKeyState(keyCode[0][4]) & 0x8000) != 0) {
+				croll += 0.1;                                       //T
+			}
+			if ((GetAsyncKeyState(keyCode[0][5]) & 0x8000) != 0) {
+				croll += -0.1;                                       //G
+			}
+			if ((GetAsyncKeyState(keyCode[0][9]) & 0x8000) != 0) { //V
+				cyaw = 0;
+				cpitch = 0;
+				croll = 0;
+			}
 
-		bool f28 = (GetAsyncKeyState(keyCode[2][8]) & 0x8000) != 0;
+			bool f28 = (GetAsyncKeyState(keyCode[2][8]) & 0x8000) != 0;
 
-        //Change position controller1
-        if ((GetAsyncKeyState(keyCode[2][0]) & 0x8000) != 0 && !f28) {
-            cpZ += -0.01;                                       //W
-        }
-        if ((GetAsyncKeyState(keyCode[2][1]) & 0x8000) != 0 && !f28) {
-            cpZ += 0.01;                                       //S
-        }
-        if ((GetAsyncKeyState(keyCode[2][2]) & 0x8000) != 0 && !f28) {
-            cpX += -0.01;                                       //A
-        }
-        if ((GetAsyncKeyState(keyCode[2][3]) & 0x8000) != 0 && !f28) {
-            cpX += 0.01;                                       //D
-        }
-        if ((GetAsyncKeyState(keyCode[2][4]) & 0x8000) != 0 && !f28) {
-            cpY += 0.01;                                       //Q
-        }
-        if ((GetAsyncKeyState(keyCode[2][5]) & 0x8000) != 0 && !f28) {
-            cpY += -0.01;                                       //E
-        }
-        if ((GetAsyncKeyState(keyCode[2][9]) & 0x8000) != 0 && !f28) {
-            cpX = 0;
-            cpY = 0;
-            cpZ = 0;
-        }                                                                        //1
+			//Change position controller1
+			if ((GetAsyncKeyState(keyCode[2][0]) & 0x8000) != 0 && !f28) {
+				cpZ += -0.01;                                       //W
+			}
+			if ((GetAsyncKeyState(keyCode[2][1]) & 0x8000) != 0 && !f28) {
+				cpZ += 0.01;                                       //S
+			}
+			if ((GetAsyncKeyState(keyCode[2][2]) & 0x8000) != 0 && !f28) {
+				cpX += -0.01;                                       //A
+			}
+			if ((GetAsyncKeyState(keyCode[2][3]) & 0x8000) != 0 && !f28) {
+				cpX += 0.01;                                       //D
+			}
+			if ((GetAsyncKeyState(keyCode[2][4]) & 0x8000) != 0 && !f28) {
+				cpY += 0.01;                                       //Q
+			}
+			if ((GetAsyncKeyState(keyCode[2][5]) & 0x8000) != 0 && !f28) {
+				cpY += -0.01;                                       //E
+			}
+			if ((GetAsyncKeyState(keyCode[2][9]) & 0x8000) != 0 && !f28) {
+				cpX = 0;
+				cpY = 0;
+				cpZ = 0;
+			}                      
+		}//1
 
-        pose.vecPosition[0] = cpX;
-        pose.vecPosition[1] = cpY;
-        pose.vecPosition[2] = cpZ;
-    } else {
-		bool f48 = (GetAsyncKeyState(keyCode[4][8]) & 0x8000) != 0;
+		pose.vecPosition[0] = cpX;
+		pose.vecPosition[1] = cpY;
+		pose.vecPosition[2] = cpZ;
+	} else {
+		if(keyCode.GetState()){
 
-        //Controller2
-        if ((GetAsyncKeyState(keyCode[4][0]) & 0x8000) != 0 && !f48) {
-            c2pZ += -0.01;                                       //I
-        }
-        if ((GetAsyncKeyState(keyCode[4][1]) & 0x8000) != 0 && !f48) {
-            c2pZ += 0.01;                                       //K
-        }
-        if ((GetAsyncKeyState(keyCode[4][2]) & 0x8000) != 0 && !f48) {
-            c2pX += -0.01;                                       //J
-        }
-        if ((GetAsyncKeyState(keyCode[4][3]) & 0x8000) != 0 && !f48) {
-            c2pX += 0.01;                                       //L
-        }
-        if ((GetAsyncKeyState(keyCode[4][4]) & 0x8000) != 0 && !f48) {
-            c2pY += 0.01;                                       //U
-        }
-        if ((GetAsyncKeyState(keyCode[4][5]) & 0x8000) != 0 && !f48) {
-            c2pY += -0.01;                                       //O
-        }
-        if ((GetAsyncKeyState(keyCode[4][9]) & 0x8000) != 0 && !f48) {
-            c2pX = 0;
-            c2pY = 0;
-            c2pZ = 0;
-        }                                                                           //0
+			bool f48 = (GetAsyncKeyState(keyCode[4][8]) & 0x8000) != 0;
 
-        pose.vecPosition[0] = c2pX;
-        pose.vecPosition[1] = c2pY;
-        pose.vecPosition[2] = c2pZ;
-    }
+			//Controller2
+			if ((GetAsyncKeyState(keyCode[4][0]) & 0x8000) != 0 && !f48) {
+				c2pZ += -0.01;                                       //I
+			}
+			if ((GetAsyncKeyState(keyCode[4][1]) & 0x8000) != 0 && !f48) {
+				c2pZ += 0.01;                                       //K
+			}
+			if ((GetAsyncKeyState(keyCode[4][2]) & 0x8000) != 0 && !f48) {
+				c2pX += -0.01;                                       //J
+			}
+			if ((GetAsyncKeyState(keyCode[4][3]) & 0x8000) != 0 && !f48) {
+				c2pX += 0.01;                                       //L
+			}
+			if ((GetAsyncKeyState(keyCode[4][4]) & 0x8000) != 0 && !f48) {
+				c2pY += 0.01;                                       //U
+			}
+			if ((GetAsyncKeyState(keyCode[4][5]) & 0x8000) != 0 && !f48) {
+				c2pY += -0.01;                                       //O
+			}
+			if ((GetAsyncKeyState(keyCode[4][9]) & 0x8000) != 0 && !f48) {
+				c2pX = 0;
+				c2pY = 0;
+				c2pZ = 0;
+			}                                
+		}//0
+
+		pose.vecPosition[0] = c2pX;
+		pose.vecPosition[1] = c2pY;
+		pose.vecPosition[2] = c2pZ;
+	}
+
+	static bool fKeyDownContinuation = 0;
+	if(((GetAsyncKeyState(keyCode[6][0]) & 0x8000) != 0)){
+		if(!fKeyDownContinuation){
+			keyCode.SetState(!keyCode.GetState());
+			fKeyDownContinuation = true;
+		}
+	}else{
+		fKeyDownContinuation = false;
+	}
+
 
     //Convert yaw, pitch, roll to quaternion
     ct0 = cos(cyaw * 0.5);
@@ -279,28 +295,30 @@ void CSampleControllerDriver::RunFrame()
     // in to UpdateBooleanComponent. This could happen in RunFrame or on a thread of your own that's reading USB
     // state. There's no need to update input state unless it changes, but it doesn't do any harm to do so.
 
-    if (ControllerIndex == 1) {
-		/*left controller*/
-        //vr::VRDriverInput()->UpdateBooleanComponent(HButtons[0], (0x8000 & GetAsyncKeyState('Z')) != 0, 0); //Application Menu
-        vr::VRDriverInput()->UpdateBooleanComponent(HButtons[1], (0x8000 & GetAsyncKeyState(keyCode[3][4])) != 0, 0); //Grip
-        vr::VRDriverInput()->UpdateBooleanComponent(HButtons[2], (0x8000 & GetAsyncKeyState(keyCode[3][2])) != 0, 0); //System
-        //vr::VRDriverInput()->UpdateBooleanComponent(HButtons[3], (0x8000 & GetAsyncKeyState(keyCode[3][2])) != 0, 0); //trackpad
+	if(keyCode.GetState()){
+		if (ControllerIndex == 1) {
+			/*left controller*/
+			//vr::VRDriverInput()->UpdateBooleanComponent(HButtons[0], (0x8000 & GetAsyncKeyState('Z')) != 0, 0); //Application Menu
+			vr::VRDriverInput()->UpdateBooleanComponent(HButtons[1], (0x8000 & GetAsyncKeyState(keyCode[3][4])) != 0, 0); //Grip
+			vr::VRDriverInput()->UpdateBooleanComponent(HButtons[2], (0x8000 & GetAsyncKeyState(keyCode[3][2])) != 0, 0); //System
+			//vr::VRDriverInput()->UpdateBooleanComponent(HButtons[3], (0x8000 & GetAsyncKeyState(keyCode[3][2])) != 0, 0); //trackpad
 
-        vr::VRDriverInput()->UpdateScalarComponent(HAnalog[0], (0x8000 & GetAsyncKeyState(keyCode[3][0])) ? 1.0 : 0.0, 0); //Trackpad x
-        vr::VRDriverInput()->UpdateScalarComponent(HAnalog[1], (0x8000 & GetAsyncKeyState(keyCode[3][1])) ? 1.0 : 0.0, 0); //Trackpad y
-        vr::VRDriverInput()->UpdateScalarComponent(HAnalog[2], (0x8000 & GetAsyncKeyState(keyCode[3][3])) ? 1.0 : 0.0, 0); //Triger
+			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[0], (0x8000 & GetAsyncKeyState(keyCode[3][0])) ? 1.0 : 0.0, 0); //Trackpad x
+			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[1], (0x8000 & GetAsyncKeyState(keyCode[3][1])) ? 1.0 : 0.0, 0); //Trackpad y
+			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[2], (0x8000 & GetAsyncKeyState(keyCode[3][3])) ? 1.0 : 0.0, 0); //Triger
         
-    } else {
-		/*right controller*/
-        //vr::VRDriverInput()->UpdateBooleanComponent(HButtons[0], (0x8000 & GetAsyncKeyState(190)) != 0, 0); //Application Menu
-        vr::VRDriverInput()->UpdateBooleanComponent(HButtons[1], (0x8000 & GetAsyncKeyState(keyCode[5][4])) != 0, 0); //Grip
-        vr::VRDriverInput()->UpdateBooleanComponent(HButtons[2], (0x8000 & GetAsyncKeyState(keyCode[5][2])) != 0, 0); //System
-        //vr::VRDriverInput()->UpdateBooleanComponent(HButtons[3], (0x8000 & GetAsyncKeyState('2')) != 0, 0); //Trackpad
+		} else {
+			/*right controller*/
+			//vr::VRDriverInput()->UpdateBooleanComponent(HButtons[0], (0x8000 & GetAsyncKeyState(190)) != 0, 0); //Application Menu
+			vr::VRDriverInput()->UpdateBooleanComponent(HButtons[1], (0x8000 & GetAsyncKeyState(keyCode[5][4])) != 0, 0); //Grip
+			vr::VRDriverInput()->UpdateBooleanComponent(HButtons[2], (0x8000 & GetAsyncKeyState(keyCode[5][2])) != 0, 0); //System
+			//vr::VRDriverInput()->UpdateBooleanComponent(HButtons[3], (0x8000 & GetAsyncKeyState('2')) != 0, 0); //Trackpad
 
-        vr::VRDriverInput()->UpdateScalarComponent(HAnalog[0], (0x8000 & GetAsyncKeyState(keyCode[5][0])) ? 1.0 : 0.0, 0); //Trackpad a
-        vr::VRDriverInput()->UpdateScalarComponent(HAnalog[1], (0x8000 & GetAsyncKeyState(keyCode[5][1])) ? 1.0 : 0.0, 0); //Trackpad b
-        vr::VRDriverInput()->UpdateScalarComponent(HAnalog[2], (0x8000 & GetAsyncKeyState(keyCode[5][3])) ? 1.0 : 0.0, 0); //Triger
-    }
+			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[0], (0x8000 & GetAsyncKeyState(keyCode[5][0])) ? 1.0 : 0.0, 0); //Trackpad a
+			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[1], (0x8000 & GetAsyncKeyState(keyCode[5][1])) ? 1.0 : 0.0, 0); //Trackpad b
+			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[2], (0x8000 & GetAsyncKeyState(keyCode[5][3])) ? 1.0 : 0.0, 0); //Triger
+		}
+	}
 
     if (m_unObjectId != vr::k_unTrackedDeviceIndexInvalid) {
         vr::VRServerDriverHost()->TrackedDevicePoseUpdated(m_unObjectId, GetPose(), sizeof(DriverPose_t));

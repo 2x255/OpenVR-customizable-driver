@@ -68,3 +68,4 @@ inline void HmdMatrix_SetIdentity(vr::HmdMatrix34_t *pMatrix)
 }
 
 #endif // BASICS_H
+

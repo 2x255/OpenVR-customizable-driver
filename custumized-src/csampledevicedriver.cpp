@@ -8,7 +8,6 @@
 
 #include <math.h>
 
-
 using namespace vr;
 
 //Head tracking vars
@@ -124,7 +123,7 @@ EVRInitError CSampleDeviceDriver::Activate(TrackedDeviceIndex_t unObjectId)
 	}
 	strcpy(&str[strlen(str)], "\\drivers\\OpenVR-customizable-driver\\resources\\settings\\keyCode(device).txt");
 	//MessageBoxA(NULL, str, NULL, MB_OK);
-	keyCode.LoadByFile(str, 6, 10);
+	keyCode.LoadByFile(str, 5, 10);
 
     return VRInitError_None;
 }
@@ -230,64 +229,77 @@ vr::DriverPose_t CSampleDeviceDriver::GetPose()
 	/*if(GetKeyState(VK_SPACE) || GetKeyState('V')){
 		MessageBoxA(NULL, "yes!!", NULL, MB_OK);
 	}*/
-	bool f08 = (GetAsyncKeyState(keyCode[0][8]) & 0x8000) != 0;
-	bool f18 = (GetAsyncKeyState(keyCode[1][8]) & 0x8000) != 0;
-	bool f28 = (GetAsyncKeyState(keyCode[2][8]) & 0x8000) != 0;
-	bool f38 = (GetAsyncKeyState(keyCode[3][8]) & 0x8000) != 0;
 
-    if ((GetAsyncKeyState(keyCode[1][0]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][0])) & 0x8000) {
-        yaw += 0.01;
-    }
-    if ((GetAsyncKeyState(keyCode[1][1]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][1])) & 0x8000) {
-        yaw += -0.01;
-    }
+	if(keyCode.GetState()){
+		bool f08 = (GetAsyncKeyState(keyCode[0][8]) & 0x8000) != 0;
+		bool f18 = (GetAsyncKeyState(keyCode[1][8]) & 0x8000) != 0;
+		bool f28 = (GetAsyncKeyState(keyCode[2][8]) & 0x8000) != 0;
+		bool f38 = (GetAsyncKeyState(keyCode[3][8]) & 0x8000) != 0;
 
-    if ((GetAsyncKeyState(keyCode[1][2]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][2])) & 0x8000) {
-        pitch += 0.01;
-    }
-    if ((GetAsyncKeyState(keyCode[1][3]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][3])) & 0x8000) {
-        pitch += -0.01;
-    }
+		if ((GetAsyncKeyState(keyCode[1][0]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][0])) & 0x8000) {
+			yaw += 0.01;
+		}
+		if ((GetAsyncKeyState(keyCode[1][1]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][1])) & 0x8000) {
+			yaw += -0.01;
+		}
 
-    if ((GetAsyncKeyState(keyCode[1][4]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][4])) & 0x8000) {
-        roll += 0.01;
-    }
-    if ((GetAsyncKeyState(keyCode[1][5]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][5])) & 0x8000) {
-        roll += -0.01;
-    }
+		if ((GetAsyncKeyState(keyCode[1][2]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][2])) & 0x8000) {
+			pitch += 0.01;
+		}
+		if ((GetAsyncKeyState(keyCode[1][3]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][3])) & 0x8000) {
+			pitch += -0.01;
+		}
 
-    if ((GetAsyncKeyState(keyCode[1][9]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][9])) & 0x8000) {
-        yaw = 0;
-        pitch = 0;
-        roll = 0;
-    }
+		if ((GetAsyncKeyState(keyCode[1][4]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][4])) & 0x8000) {
+			roll += 0.01;
+		}
+		if ((GetAsyncKeyState(keyCode[1][5]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][5])) & 0x8000) {
+			roll += -0.01;
+		}
 
-    if ((GetAsyncKeyState(keyCode[0][0]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][0])) & 0x8000) {
-        pZ += -0.01;
-    }
-    if ((GetAsyncKeyState(keyCode[0][1]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][1])) & 0x8000) {
-        pZ += 0.01;
-    }
+		if ((GetAsyncKeyState(keyCode[1][9]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][9])) & 0x8000) {
+			yaw = 0;
+			pitch = 0;
+			roll = 0;
+		}
 
-    if ((GetAsyncKeyState(keyCode[0][2]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][2])) & 0x8000) {
-        pX += -0.01;
-    }
-    if ((GetAsyncKeyState(keyCode[0][3]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][3])) & 0x8000) {
-        pX += 0.01;
-    }
+		if ((GetAsyncKeyState(keyCode[0][0]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][0])) & 0x8000) {
+			pZ += -0.01;
+		}
+		if ((GetAsyncKeyState(keyCode[0][1]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][1])) & 0x8000) {
+			pZ += 0.01;
+		}
 
-    if ((GetAsyncKeyState(keyCode[0][4]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][4])) & 0x8000) {
-        pY += 0.01;
-    }
-    if ((GetAsyncKeyState(keyCode[0][5]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][5])) & 0x8000) {
-        pY += -0.01;
-    }
+		if ((GetAsyncKeyState(keyCode[0][2]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][2])) & 0x8000) {
+			pX += -0.01;
+		}
+		if ((GetAsyncKeyState(keyCode[0][3]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][3])) & 0x8000) {
+			pX += 0.01;
+		}
 
-    if ((GetAsyncKeyState(keyCode[0][9]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][9])) & 0x8000) {
-        pX = 0;
-        pY = 0;
-        pZ = 0;
-    }
+		if ((GetAsyncKeyState(keyCode[0][4]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][4])) & 0x8000) {
+			pY += 0.01;
+		}
+		if ((GetAsyncKeyState(keyCode[0][5]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][5])) & 0x8000) {
+			pY += -0.01;
+		}
+
+		if ((GetAsyncKeyState(keyCode[0][9]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][9])) & 0x8000) {
+			pX = 0;
+			pY = 0;
+			pZ = 0;
+		}
+	}
+
+	static bool fKeyDownContinuation = 0;
+	if(((GetAsyncKeyState(keyCode[4][0]) & 0x8000) != 0)){
+		if(!fKeyDownContinuation){
+			keyCode.SetState(!keyCode.GetState());
+			fKeyDownContinuation = true;
+		}
+	}else{
+		fKeyDownContinuation = false;
+	}
 
     pose.vecPosition[0] = pX;
     pose.vecPosition[1] = pY;
