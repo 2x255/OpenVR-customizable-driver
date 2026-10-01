@@ -259,10 +259,10 @@ vr::DriverPose_t CSampleDeviceDriver::GetPose()
 		bool f38 = (GetAsyncKeyState(keyCode[3][8]) & 0x8000) != 0;
 
 		if ((GetAsyncKeyState(keyCode[1][0]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][0])) & 0x8000) {
-			yaw += 0.01;
+			yaw += -0.01;
 		}
 		if ((GetAsyncKeyState(keyCode[1][1]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][1])) & 0x8000) {
-			yaw += -0.01;
+			yaw += 0.01;
 		}
 
 		if ((GetAsyncKeyState(keyCode[1][2]) & 0x8000) != 0 && !f18 || f38 && (GetAsyncKeyState(keyCode[3][2])) & 0x8000) {
@@ -286,10 +286,10 @@ vr::DriverPose_t CSampleDeviceDriver::GetPose()
 		}
 
 		if ((GetAsyncKeyState(keyCode[0][0]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][0])) & 0x8000) {
-			moveForward += -1;
+			moveForward += 1;
 		}
 		if ((GetAsyncKeyState(keyCode[0][1]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][1])) & 0x8000) {
-			moveForward += 1;
+			moveForward += -1;
 		}
 
 		if ((GetAsyncKeyState(keyCode[0][2]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][2])) & 0x8000) {
