@@ -215,6 +215,31 @@ DistortionCoordinates_t CSampleDeviceDriver::ComputeDistortion(EVREye eEye, floa
     return coordinates;
 }
 
+// クォータニオンでベクトルを回転する
+static void RotateByQuat(const vr::HmdQuaternion_t& q, double vx, double vy, double vz,
+                          double& outX, double& outY, double& outZ)
+{
+    // t = 2 * cross(q.xyz, v)
+    double tx = 2 * (q.y * vz - q.z * vy);
+    double ty = 2 * (q.z * vx - q.x * vz);
+    double tz = 2 * (q.x * vy - q.y * vx);
+    // v' = v + q.w * t + cross(q.xyz, t)
+    outX = vx + q.w * tx + (q.y * tz - q.z * ty);
+    outY = vy + q.w * ty + (q.z * tx - q.x * tz);
+    outZ = vz + q.w * tz + (q.x * ty - q.y * tx);
+}
+
+// クォータニオンの掛け算(w,x,y,z順)
+static void QMul(double w1,double x1,double y1,double z1,
+                  double w2,double x2,double y2,double z2,
+                  double& w,double& x,double& y,double& z)
+{
+    w = w1*w2 - x1*x2 - y1*y2 - z1*z2;
+    x = w1*x2 + x1*w2 + y1*z2 - z1*y2;
+    y = w1*y2 - x1*z2 + y1*w2 + z1*x2;
+    z = w1*z2 + x1*y2 - y1*x2 + z1*w2;
+}
+
 vr::DriverPose_t CSampleDeviceDriver::GetPose()
 {
     vr::DriverPose_t pose = { 0 };
@@ -225,10 +250,7 @@ vr::DriverPose_t CSampleDeviceDriver::GetPose()
     pose.qWorldFromDriverRotation = HmdQuaternion_Init(1, 0, 0, 0);
     pose.qDriverFromHeadRotation = HmdQuaternion_Init(1, 0, 0, 0);
 
-    //Simple change yaw, pitch, roll with numpad keys
-	/*if(GetKeyState(VK_SPACE) || GetKeyState('V')){
-		MessageBoxA(NULL, "yes!!", NULL, MB_OK);
-	}*/
+	double moveForward = 0, moveRight = 0, moveUp = 0;
 
 	if(keyCode.GetState()){
 		bool f08 = (GetAsyncKeyState(keyCode[0][8]) & 0x8000) != 0;
@@ -264,30 +286,33 @@ vr::DriverPose_t CSampleDeviceDriver::GetPose()
 		}
 
 		if ((GetAsyncKeyState(keyCode[0][0]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][0])) & 0x8000) {
-			pZ += -0.01;
+			moveForward += -1;
 		}
 		if ((GetAsyncKeyState(keyCode[0][1]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][1])) & 0x8000) {
-			pZ += 0.01;
+			moveForward += 1;
 		}
 
 		if ((GetAsyncKeyState(keyCode[0][2]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][2])) & 0x8000) {
-			pX += -0.01;
+			moveRight += -1;
 		}
 		if ((GetAsyncKeyState(keyCode[0][3]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][3])) & 0x8000) {
-			pX += 0.01;
+			moveRight += 1;
 		}
 
 		if ((GetAsyncKeyState(keyCode[0][4]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][4])) & 0x8000) {
-			pY += 0.01;
+			moveUp += 1;
 		}
 		if ((GetAsyncKeyState(keyCode[0][5]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][5])) & 0x8000) {
-			pY += -0.01;
+			moveUp += -1;
 		}
 
 		if ((GetAsyncKeyState(keyCode[0][9]) & 0x8000) != 0 && !f08 || f28 && (GetAsyncKeyState(keyCode[2][9])) & 0x8000) {
 			pX = 0;
 			pY = 0;
 			pZ = 0;
+			moveForward = 0;
+			moveRight = 0;
+			moveUp = 0;
 		}
 	}
 
@@ -301,23 +326,36 @@ vr::DriverPose_t CSampleDeviceDriver::GetPose()
 		fKeyDownContinuation = false;
 	}
 
-    pose.vecPosition[0] = pX;
-    pose.vecPosition[1] = pY;
-    pose.vecPosition[2] = pZ;
+	
+	// yaw: 世界のY軸(左右を向く)を一番外側に
+	double qyw = cos(yaw * 0.5), qyx = 0, qyy = sin(yaw * 0.5), qyz = 0;
+	// pitch: ローカルX軸(見上げ下げ)を2番目に
+	double qpw = cos(pitch * 0.5), qpx = sin(pitch * 0.5), qpy = 0, qpz = 0;
+	// roll: ローカルZ軸(首を傾げる)を一番内側に
+	double qrw = cos(roll * 0.5), qrx = 0, qry = 0, qrz = sin(roll * 0.5);
 
-    //Convert yaw, pitch, roll to quaternion
-    t0 = cos(yaw * 0.5);
-    t1 = sin(yaw * 0.5);
-    t2 = cos(roll * 0.5);
-    t3 = sin(roll * 0.5);
-    t4 = cos(pitch * 0.5);
-    t5 = sin(pitch * 0.5);
+	double w1,x1,y1,z1;
+	QMul(qyw,qyx,qyy,qyz, qpw,qpx,qpy,qpz, w1,x1,y1,z1);   // yaw * pitch
+	QMul(w1,x1,y1,z1, qrw,qrx,qry,qrz,
+		 pose.qRotation.w, pose.qRotation.x, pose.qRotation.y, pose.qRotation.z);  // (yaw*pitch) * roll
 
-    //Set head tracking rotation
-    pose.qRotation.w = t0 * t2 * t4 + t1 * t3 * t5;
-    pose.qRotation.x = t0 * t3 * t4 - t1 * t2 * t5;
-    pose.qRotation.y = t0 * t2 * t5 + t1 * t3 * t4;
-    pose.qRotation.z = t1 * t2 * t4 - t0 * t3 * t5;
+// 3. 「前・右・上」を、実際に使ったqRotationから直接求める(水平化はしない)
+double fx, fy, fz;   // 前(ローカルの -Z を回転)
+double rx, ry, rz;   // 右(ローカルの +X を回転)
+double ux, uy, uz;   // 上(ローカルの +Y を回転)
+RotateByQuat(pose.qRotation, 0, 0, -1, fx, fy, fz);
+RotateByQuat(pose.qRotation, 1, 0, 0,  rx, ry, rz);
+RotateByQuat(pose.qRotation, 0, 1, 0,  ux, uy, uz);
+
+// 4. 移動(forward/right/upは回転で長さが変わらないので、正規化は不要)
+const double step = 0.01;
+pX += (fx * moveForward + rx * moveRight + ux * moveUp) * step;
+pY += (fy * moveForward + ry * moveRight + uy * moveUp) * step;
+pZ += (fz * moveForward + rz * moveRight + uz * moveUp) * step;
+
+pose.vecPosition[0] = pX;
+pose.vecPosition[1] = pY;
+pose.vecPosition[2] = pZ;
 
     return pose;
 }
