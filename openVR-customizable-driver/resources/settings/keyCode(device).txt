@@ -1,61 +1,33 @@
-//コメント行。デバイスは[5][10]。コメント行に空白と半角イコールを入れてはならない
-//ab[equal]cdのとき、[a][b][equal]仮想キーコードcd,と処理されます。
-
-//pZ:-VK_UP+VK_DOWN
 00 = 38
 01 = 40
-//pX:-VK_LEFT+VK_RIGHT
 02 = 37
 03 = 39
-//pY:+VK_PRIOR-VK_NEXT
 04 = 33
 05 = 34
-//clear:pX,pY,pZ:VK_END
 09 = 35
-//逆修飾キー(このキーを押していると00番台は反応しない):VK_SPACE
 08 = 32
-
-//yaw:+VK_NUMPAD3-VK_NUMPAD1
 10 = 99
 11 = 97
-//pitch:+VK_NUMPAD4-VK_NUMPAD6
 12 = 100
 13 = 102
-//roll:+VK_NUMPAD8-VK_NUMPAD2
 14 = 104
 15 = 98
-//clear:yaw,pitch,roll:VK_NUMPAD9
 19 = 105
-//逆修飾キー(このキーを押していると10番台は反応しない):VK_SPACE
 18 = 32
-
-//pZ:-+
 20 = W
 21 = S
-//pX:-+
 22 = A
 23 = D
-//pY:+-
 24 = Q
 25 = E
-//clear:pX,pY,pZ:1
 29 = 49
-//修飾キー(このキーを押していないと20番台は反応しない):VK_SPACE
 28 = 32
-
-//yaw:+-
 30 = J
 31 = L
-//pitch:+-
 32 = I
 33 = K
-//roll:+-
 34 = U
 35 = O
-//clear:yaw,pitch,roll:0
 39 = 48
-//修飾キー(このキーを押していないと20番台は反応しない):VK_SPACE
 38 = 32
-
-//state(入力自体のONOFF)
 40 = 192
