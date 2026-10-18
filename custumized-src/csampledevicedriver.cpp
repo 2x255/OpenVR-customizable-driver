@@ -75,6 +75,9 @@ EVRInitError CSampleDeviceDriver::Activate(TrackedDeviceIndex_t unObjectId)
     //Debug mode activate Windowed Mode (borderless fullscreen), locked to 30 FPS, for testing
     vr::VRProperties()->SetBoolProperty(m_ulPropertyContainer, Prop_DisplayDebugMode_Bool, true);
 
+	vr::VRProperties()->SetFloatProperty(m_ulPropertyContainer, vr::Prop_DisplayFrequency_Float, 60.0f);
+
+
     // Icons can be configured in code or automatically configured by an external file "drivername\resources\driver.vrresources".
     // Icon properties NOT configured in code (post Activate) are then auto-configured by the optional presence of a driver's "drivername\resources\driver.vrresources".
     // In this manner a driver can configure their icons in a flexible data driven fashion by using an external file.
@@ -239,6 +242,7 @@ static void QMul(double w1,double x1,double y1,double z1,
     y = w1*y2 - x1*z2 + y1*w2 + z1*x2;
     z = w1*z2 + x1*y2 - y1*x2 + z1*w2;
 }
+
 
 vr::DriverPose_t CSampleDeviceDriver::GetPose()
 {

@@ -30,7 +30,7 @@ bool TextFile::Load(const char *strFilePath)
 
 	DWORD dwRead;
 
-	if(!(src = new char[liSize.QuadPart+1])){return false;};
+	if(!(src = new char[liSize.QuadPart+1]{})){return false;};
 	/*ƒtƒ@ƒCƒ‹“Ç‚İ‚İ*/
 	while(liCurrentIndex.QuadPart < liSize.QuadPart){
 		if(!ReadFile(hFile, &src[liCurrentIndex.QuadPart],

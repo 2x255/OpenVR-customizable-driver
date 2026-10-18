@@ -22,6 +22,7 @@ void KeyCodeManager::LoadByFile(const char *filepath, unsigned int __size_a, uns
 		TextFile textfile;
 		if(!textfile.Load(filepath)){break;};
 		if(!textfile.Replace('\n', '\0')){break;};
+		if(!textfile.Replace('\r', '\0')){break;};
 		if(!textfile.Replace(' ', '\0')){break;};
 		if(!textfile.Replace('=', '\0')){break;};
 		char *src = textfile.GetString();
@@ -65,6 +66,10 @@ void KeyCodeManager::LoadByFile(const char *filepath, unsigned int __size_a, uns
 
 std::vector<unsigned int>& KeyCodeManager::operator[](unsigned int index)
 {
+	static std::vector<unsigned int> damy(10, 0);
+	if(size_a <= index){
+		return damy;
+	}
 	return keyCode[index];
 }
 
