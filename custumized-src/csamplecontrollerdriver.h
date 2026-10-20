@@ -52,7 +52,7 @@ private:
     //vr::VRInputComponentHandle_t m_compC;
     vr::VRInputComponentHandle_t m_compHaptic;
 
-    vr::VRInputComponentHandle_t HButtons[4], HAnalog[3];
+    vr::VRInputComponentHandle_t HButtons[8], HAnalog[6];
     //std::string m_sSerialNumber;
     //std::string m_sModelNumber;
 };

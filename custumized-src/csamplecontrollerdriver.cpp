@@ -28,6 +28,24 @@ CSampleControllerDriver::~CSampleControllerDriver()
 
 vr::EVRInitError CSampleControllerDriver::Activate(vr::TrackedDeviceIndex_t unObjectId)
 {
+	/*std::vector<XrActionSuggestedBinding> binding = {
+		{action.grip, GetActionXrPath("/user/hand/left/input/grip/pose")},
+		{action.grip, GetActionXrPath("/user/hand/right/input/grip/pose")},
+		{action.trigger, GetActionXrPath("/user/hand/left/input/trigger/value")},
+		{action.trigger, GetActionXrPath("/user/hand/right/input/trigger/value")},
+		{action.squeeze, GetActionXrPath("/user/hand/left/input/squeeze/value")},
+		{action.squeeze, GetActionXrPath("/user/hand/right/input/squeeze/value")},
+		{action.stick, GetActionXrPath("/user/hand/left/input/thumbstick")},
+		{action.stick, GetActionXrPath("/user/hand/right/input/thumbstick")},
+		{action.stickClick, GetActionXrPath("/user/hand/left/input/thumbstick/click")},
+		{action.stickClick, GetActionXrPath("/user/hand/right/input/thumbstick/click")},
+		{action.primary, GetActionXrPath("/user/hand/left/input/x/click")},
+		{action.primary, GetActionXrPath("/user/hand/right/input/a/click")},
+		{action.secondary, GetActionXrPath("/user/hand/left/input/y/click")},
+		{action.secondary, GetActionXrPath("/user/hand/right/input/b/click")},
+		{action.menu, GetActionXrPath("/user/hand/left/input/menu/click")},
+	};*/
+
     m_unObjectId = unObjectId;
     m_ulPropertyContainer = vr::VRProperties()->TrackedDeviceToPropertyContainer(m_unObjectId);
 
@@ -74,9 +92,13 @@ vr::EVRInitError CSampleControllerDriver::Activate(vr::TrackedDeviceIndex_t unOb
     switch (ControllerIndex) {
     case 1:
         vr::VRProperties()->SetInt32Property(m_ulPropertyContainer, Prop_ControllerRoleHint_Int32, TrackedControllerRole_LeftHand);
+		vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/x/click", &HButtons[4]);
+		vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/y/click", &HButtons[5]);
         break;
     case 2:
         vr::VRProperties()->SetInt32Property(m_ulPropertyContainer, Prop_ControllerRoleHint_Int32, TrackedControllerRole_RightHand);
+		vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/a/click", &HButtons[4]);
+		vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/b/click", &HButtons[5]);
         break;
     }
 
@@ -86,22 +108,37 @@ vr::EVRInitError CSampleControllerDriver::Activate(vr::TrackedDeviceIndex_t unOb
 
     //  Buttons handles
     vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/application_menu/click", &HButtons[0]);
-    vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/grip/click", &HButtons[1]);
+    //vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/grip/click", &HButtons[1]);/*grip‚Ívalue‚Å‚µ‚½*/
     vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/system/click", &HButtons[2]);
-    vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/trackpad/click", &HButtons[3]);
+    vr::VRDriverInput()->CreateBooleanComponent(m_ulPropertyContainer, "/input/joystick/click", &HButtons[3]);
+    
+    
+    
 
     // Analog handles
-    vr::VRDriverInput()->CreateScalarComponent(
-                m_ulPropertyContainer, "/input/trackpad/x", &HAnalog[0],
+    /*vr::VRDriverInput()->CreateScalarComponent(
+                m_ulPropertyContainer, "/input/a/click", &HAnalog[0],
             vr::EVRScalarType::VRScalarType_Absolute, vr::EVRScalarUnits::VRScalarUnits_NormalizedTwoSided
             );
     vr::VRDriverInput()->CreateScalarComponent(
-                m_ulPropertyContainer, "/input/trackpad/y", &HAnalog[1],
+                m_ulPropertyContainer, "/input/b/click", &HAnalog[1],
             vr::EVRScalarType::VRScalarType_Absolute, vr::EVRScalarUnits::VRScalarUnits_NormalizedTwoSided
-            );
+            );*/
     vr::VRDriverInput()->CreateScalarComponent(
                 m_ulPropertyContainer, "/input/trigger/value", &HAnalog[2],
             vr::EVRScalarType::VRScalarType_Absolute, vr::EVRScalarUnits::VRScalarUnits_NormalizedOneSided
+            );
+	vr::VRDriverInput()->CreateScalarComponent(
+                m_ulPropertyContainer, "/input/grip/value", &HAnalog[3],
+            vr::EVRScalarType::VRScalarType_Absolute, vr::EVRScalarUnits::VRScalarUnits_NormalizedOneSided
+            );
+	vr::VRDriverInput()->CreateScalarComponent(
+                m_ulPropertyContainer, "/input/joystick/x", &HAnalog[4],
+            vr::EVRScalarType::VRScalarType_Absolute, vr::EVRScalarUnits::VRScalarUnits_NormalizedTwoSided
+            );
+	vr::VRDriverInput()->CreateScalarComponent(
+                m_ulPropertyContainer, "/input/joystick/y", &HAnalog[5],
+            vr::EVRScalarType::VRScalarType_Absolute, vr::EVRScalarUnits::VRScalarUnits_NormalizedTwoSided
             );
 
     vr::VRProperties()->SetInt32Property(m_ulPropertyContainer, vr::Prop_Axis0Type_Int32, vr::k_eControllerAxis_TrackPad);
@@ -195,30 +232,30 @@ DriverPose_t CSampleControllerDriver::GetPose()
 
 			bool f28 = (GetAsyncKeyState(keyCode[2][8]) & 0x8000) != 0;
 
-			//Change position controller1
-			if ((GetAsyncKeyState(keyCode[2][0]) & 0x8000) != 0 && !f28) {
-				cpZ += -0.01;                                       //W
-			}
-			if ((GetAsyncKeyState(keyCode[2][1]) & 0x8000) != 0 && !f28) {
-				cpZ += 0.01;                                       //S
-			}
-			if ((GetAsyncKeyState(keyCode[2][2]) & 0x8000) != 0 && !f28) {
-				cpX += -0.01;                                       //A
-			}
-			if ((GetAsyncKeyState(keyCode[2][3]) & 0x8000) != 0 && !f28) {
-				cpX += 0.01;                                       //D
-			}
-			if ((GetAsyncKeyState(keyCode[2][4]) & 0x8000) != 0 && !f28) {
-				cpY += 0.01;                                       //Q
-			}
-			if ((GetAsyncKeyState(keyCode[2][5]) & 0x8000) != 0 && !f28) {
-				cpY += -0.01;                                       //E
-			}
-			if ((GetAsyncKeyState(keyCode[2][9]) & 0x8000) != 0 && !f28) {
-				cpX = 0;
-				cpY = 0;
-				cpZ = 0;
-			}                      
+			////Change position controller1
+			//if ((GetAsyncKeyState(keyCode[2][0]) & 0x8000) != 0 && !f28) {
+			//	cpZ += -0.01;                                       //W
+			//}
+			//if ((GetAsyncKeyState(keyCode[2][1]) & 0x8000) != 0 && !f28) {
+			//	cpZ += 0.01;                                       //S
+			//}
+			//if ((GetAsyncKeyState(keyCode[2][2]) & 0x8000) != 0 && !f28) {
+			//	cpX += -0.01;                                       //A
+			//}
+			//if ((GetAsyncKeyState(keyCode[2][3]) & 0x8000) != 0 && !f28) {
+			//	cpX += 0.01;                                       //D
+			//}
+			//if ((GetAsyncKeyState(keyCode[2][4]) & 0x8000) != 0 && !f28) {
+			//	cpY += 0.01;                                       //Q
+			//}
+			//if ((GetAsyncKeyState(keyCode[2][5]) & 0x8000) != 0 && !f28) {
+			//	cpY += -0.01;                                       //E
+			//}
+			//if ((GetAsyncKeyState(keyCode[2][9]) & 0x8000) != 0 && !f28) {
+			//	cpX = 0;
+			//	cpY = 0;
+			//	cpZ = 0;
+			//}                      
 		}//1
 
 		pose.vecPosition[0] = cpX;
@@ -229,30 +266,30 @@ DriverPose_t CSampleControllerDriver::GetPose()
 
 			bool f48 = (GetAsyncKeyState(keyCode[4][8]) & 0x8000) != 0;
 
-			//Controller2
-			if ((GetAsyncKeyState(keyCode[4][0]) & 0x8000) != 0 && !f48) {
-				c2pZ += -0.01;                                       //I
-			}
-			if ((GetAsyncKeyState(keyCode[4][1]) & 0x8000) != 0 && !f48) {
-				c2pZ += 0.01;                                       //K
-			}
-			if ((GetAsyncKeyState(keyCode[4][2]) & 0x8000) != 0 && !f48) {
-				c2pX += -0.01;                                       //J
-			}
-			if ((GetAsyncKeyState(keyCode[4][3]) & 0x8000) != 0 && !f48) {
-				c2pX += 0.01;                                       //L
-			}
-			if ((GetAsyncKeyState(keyCode[4][4]) & 0x8000) != 0 && !f48) {
-				c2pY += 0.01;                                       //U
-			}
-			if ((GetAsyncKeyState(keyCode[4][5]) & 0x8000) != 0 && !f48) {
-				c2pY += -0.01;                                       //O
-			}
-			if ((GetAsyncKeyState(keyCode[4][9]) & 0x8000) != 0 && !f48) {
-				c2pX = 0;
-				c2pY = 0;
-				c2pZ = 0;
-			}                                
+			////Controller2
+			//if ((GetAsyncKeyState(keyCode[4][0]) & 0x8000) != 0 && !f48) {
+			//	c2pZ += -0.01;                                       //I
+			//}
+			//if ((GetAsyncKeyState(keyCode[4][1]) & 0x8000) != 0 && !f48) {
+			//	c2pZ += 0.01;                                       //K
+			//}
+			//if ((GetAsyncKeyState(keyCode[4][2]) & 0x8000) != 0 && !f48) {
+			//	c2pX += -0.01;                                       //J
+			//}
+			//if ((GetAsyncKeyState(keyCode[4][3]) & 0x8000) != 0 && !f48) {
+			//	c2pX += 0.01;                                       //L
+			//}
+			//if ((GetAsyncKeyState(keyCode[4][4]) & 0x8000) != 0 && !f48) {
+			//	c2pY += 0.01;                                       //U
+			//}
+			//if ((GetAsyncKeyState(keyCode[4][5]) & 0x8000) != 0 && !f48) {
+			//	c2pY += -0.01;                                       //O
+			//}
+			//if ((GetAsyncKeyState(keyCode[4][9]) & 0x8000) != 0 && !f48) {
+			//	c2pX = 0;
+			//	c2pY = 0;
+			//	c2pZ = 0;
+			//}                                
 		}//0
 
 		pose.vecPosition[0] = c2pX;
@@ -299,24 +336,57 @@ void CSampleControllerDriver::RunFrame()
 		if (ControllerIndex == 1) {
 			/*left controller*/
 			//vr::VRDriverInput()->UpdateBooleanComponent(HButtons[0], (0x8000 & GetAsyncKeyState('Z')) != 0, 0); //Application Menu
-			vr::VRDriverInput()->UpdateBooleanComponent(HButtons[1], (0x8000 & GetAsyncKeyState(keyCode[3][4])) != 0, 0); //Grip
+			//vr::VRDriverInput()->UpdateBooleanComponent(HButtons[1], (0x8000 & GetAsyncKeyState(keyCode[3][4])) != 0, 0); //Grip
 			vr::VRDriverInput()->UpdateBooleanComponent(HButtons[2], (0x8000 & GetAsyncKeyState(keyCode[3][2])) != 0, 0); //System
-			//vr::VRDriverInput()->UpdateBooleanComponent(HButtons[3], (0x8000 & GetAsyncKeyState(keyCode[3][2])) != 0, 0); //trackpad
+			vr::VRDriverInput()->UpdateBooleanComponent(HButtons[3], (0x8000 & GetAsyncKeyState(keyCode[3][5])) != 0, 0); //shumbstick-click
+			vr::VRDriverInput()->UpdateBooleanComponent(HButtons[4], (0x8000 & GetAsyncKeyState(keyCode[3][0])) != 0, 0); //x
+			vr::VRDriverInput()->UpdateBooleanComponent(HButtons[5], (0x8000 & GetAsyncKeyState(keyCode[3][1])) != 0, 0); //y
 
-			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[0], (0x8000 & GetAsyncKeyState(keyCode[3][0])) ? 1.0 : 0.0, 0); //Trackpad x
-			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[1], (0x8000 & GetAsyncKeyState(keyCode[3][1])) ? 1.0 : 0.0, 0); //Trackpad y
+			//vr::VRDriverInput()->UpdateScalarComponent(HAnalog[0], (0x8000 & GetAsyncKeyState(keyCode[3][0])) ? 1.0 : 0.0, 0); //Trackpad x
+			//vr::VRDriverInput()->UpdateScalarComponent(HAnalog[1], (0x8000 & GetAsyncKeyState(keyCode[3][1])) ? 1.0 : 0.0, 0); //Trackpad y
 			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[2], (0x8000 & GetAsyncKeyState(keyCode[3][3])) ? 1.0 : 0.0, 0); //Triger
+			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[3], (0x8000 & GetAsyncKeyState(keyCode[3][6])) ? 1.0 : 0.0, 0); //grip 
+			float x = 0.0f;
+			float y = 0.0f;
+			if(0x8000 & GetAsyncKeyState(keyCode[2][0])){
+				y += 1.0f;
+			}if(0x8000 & GetAsyncKeyState(keyCode[2][1])){
+				y += -1.0f;
+			}if(0x8000 & GetAsyncKeyState(keyCode[2][2])){
+				x += -1.0f;
+			}if(0x8000 & GetAsyncKeyState(keyCode[2][3])){
+				x += 1.0f;
+			}
+			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[4], x, 0); //stick x
+			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[5], y, 0); //stick y
         
 		} else {
 			/*right controller*/
 			//vr::VRDriverInput()->UpdateBooleanComponent(HButtons[0], (0x8000 & GetAsyncKeyState(190)) != 0, 0); //Application Menu
-			vr::VRDriverInput()->UpdateBooleanComponent(HButtons[1], (0x8000 & GetAsyncKeyState(keyCode[5][4])) != 0, 0); //Grip
+			//vr::VRDriverInput()->UpdateBooleanComponent(HButtons[1], (0x8000 & GetAsyncKeyState(keyCode[5][4])) != 0, 0); //Grip
 			vr::VRDriverInput()->UpdateBooleanComponent(HButtons[2], (0x8000 & GetAsyncKeyState(keyCode[5][2])) != 0, 0); //System
-			//vr::VRDriverInput()->UpdateBooleanComponent(HButtons[3], (0x8000 & GetAsyncKeyState('2')) != 0, 0); //Trackpad
+			vr::VRDriverInput()->UpdateBooleanComponent(HButtons[3], (0x8000 & GetAsyncKeyState(keyCode[5][5])) != 0, 0); //shumbstick-click
+			vr::VRDriverInput()->UpdateBooleanComponent(HButtons[4], (0x8000 & GetAsyncKeyState(keyCode[5][0])) != 0, 0); //x
+			vr::VRDriverInput()->UpdateBooleanComponent(HButtons[5], (0x8000 & GetAsyncKeyState(keyCode[5][1])) != 0, 0); //y
 
-			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[0], (0x8000 & GetAsyncKeyState(keyCode[5][0])) ? 1.0 : 0.0, 0); //Trackpad a
-			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[1], (0x8000 & GetAsyncKeyState(keyCode[5][1])) ? 1.0 : 0.0, 0); //Trackpad b
+			//vr::VRDriverInput()->UpdateScalarComponent(HAnalog[0], (0x8000 & GetAsyncKeyState(keyCode[5][0])) ? 1.0 : 0.0, 0); //Trackpad a
+			//vr::VRDriverInput()->UpdateScalarComponent(HAnalog[1], (0x8000 & GetAsyncKeyState(keyCode[5][1])) ? 1.0 : 0.0, 0); //Trackpad b
 			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[2], (0x8000 & GetAsyncKeyState(keyCode[5][3])) ? 1.0 : 0.0, 0); //Triger
+			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[3], (0x8000 & GetAsyncKeyState(keyCode[5][6])) ? 1.0 : 0.0, 0); //grip 
+
+			float x = 0.0f;
+			float y = 0.0f;
+			if(0x8000 & GetAsyncKeyState(keyCode[4][0])){
+				y += 1.0f;
+			}if(0x8000 & GetAsyncKeyState(keyCode[4][1])){
+				y += -1.0f;
+			}if(0x8000 & GetAsyncKeyState(keyCode[4][2])){
+				x += -1.0f;
+			}if(0x8000 & GetAsyncKeyState(keyCode[4][3])){
+				x += 1.0f;
+			}
+			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[4], x, 0); //stick x
+			vr::VRDriverInput()->UpdateScalarComponent(HAnalog[5], y, 0); //stick y
 		}
 	}
 
